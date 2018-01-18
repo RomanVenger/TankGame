@@ -1,0 +1,58 @@
+package display;
+
+import javafx.stage.Window;
+
+import java.awt.*;
+import java.awt.event.KeyListener;
+import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
+import java.awt.image.ImageObserver;
+import javax.swing.JFrame;
+
+public class Display  {
+    private static boolean created = false;
+
+    private static Canvas content;
+    private static BufferedImage buffer;
+    private static int[] bufferData;
+    private static Graphics bufferGraphics;
+    private static int clearColor;
+    private static BufferStrategy bufferStrategy;
+    public static JFrame window;
+    public static void create(int width, int height, String title, int _clearcolor)
+     {
+
+        if (!created) {
+            window = new JFrame(title);
+            window.setDefaultCloseOperation(3);
+            content = new Canvas();
+            Dimension size = new Dimension(width, height);
+            content.setPreferredSize(size);
+            content.setBackground(Color.black);
+            window.setResizable(true);
+            window.setSize(1400, 800);
+            window.getContentPane().add(content);
+            window.pack();
+            window.setVisible(true);
+            buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            bufferData = ((DataBufferInt) buffer.getRaster().getDataBuffer()).getData();
+            bufferGraphics = buffer.getGraphics();
+            ((Graphics2D) bufferGraphics).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            content.createBufferStrategy(3);
+            bufferStrategy = content.getBufferStrategy();
+            created = true;
+            clearColor = _clearcolor;
+        }
+    }
+
+    public static Graphics2D getGraphics() {
+        return (Graphics2D)bufferGraphics;
+    }
+
+    public static void swapBuffers() {
+        Graphics g = bufferStrategy.getDrawGraphics();
+        g.drawImage(buffer, 0, 0, null);
+        bufferStrategy.show();
+    }
+}
